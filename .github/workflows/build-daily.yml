@@ -11,6 +11,11 @@ on:
       
   pull_request:
   workflow_dispatch: # allow manually triggering builds
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   daily-image-builds:
     name: Build Custom Image
@@ -37,3 +42,4 @@ jobs:
           pr_event_number: ${{ github.event.number }}
           maximize_build_space: true
           rechunk: true
+          use_cache: true

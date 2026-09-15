@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -60,9 +61,13 @@ jobs:
       - name: Build Container Image
         run: |
           IMAGE="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ matrix.name }}:${{ matrix.tag }}"
+          CACHE_REF="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/sharkfin-iso-cache:${{ matrix.name }}"
+          echo "${{ github.token }}" | sudo podman login ghcr.io -u "${{ github.actor }}" --password-stdin
           sudo env TMPDIR=/mnt/podman-storage/tmp podman build \
             --cap-add sys_admin \
             --security-opt label=disable \
+            --cache-from type=registry,ref="$CACHE_REF" \
+            --cache-to type=registry,ref="$CACHE_REF",mode=max \
             --build-arg BASE_IMAGE="$IMAGE" \
             --build-arg INSTALL_IMAGE_PAYLOAD="$IMAGE" \
             --build-arg ISO_LABEL="${{ matrix.label }}" \
