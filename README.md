@@ -1,43 +1,103 @@
-# sharkfin &nbsp; [![bluebuild build badge](https://github.com/arikcloss/sharkfin/actions/workflows/build.yml/badge.svg)](https://github.com/arikcloss/sharkfin/actions/workflows/build.yml)
+# sharkfin &nbsp; [![bluebuild build badge](https://github.com/arikcloss/sharkfin/actions/workflows/build-daily.yml/badge.svg)](https://github.com/arikcloss/sharkfin/actions/workflows/build-daily.yml)
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
+These are [Bootable Container](https://containers.github.io/bootable/) images built from [Universal Blue](https://universal-blue.org) base images with [BlueBuild](https://blue-build.org)'s tools. The images contain either the [Fedora Silverblue](https://silverblue.fedoraproject.org), [Bluefin](https://projectbluefin.io), or [Bazzite](https://bazzite.gg) operating system with my personal preferences baked in. The image based on Bluefin DX (`sharkfin-bluefin`) is my daily driver. All images get a similar GNOME desktop experience.
 
-After setup, it is recommended you update this README to describe your custom image.
+Modifications common to all images:
+
+-   Google Chrome RPM installed and set as default browser
+-   [Variety](https://peterlevi.com/variety/) wallpaper changer (installed as RPM for now)
+-   Clocks set to AM/PM view with Weekday Display
+-   Curated selection of Flatpak apps installed automatically at runtime (this overrides Bluefin's default flatpak choices)
+-   Single click to open items in Nautilus
+-   Use smaller icons in Nautilus icon view
+-   Sort directories first in Nautilus and GTK file choosers
+-   Dark styles enabled by default
+-   [System76 wallpaper collection](https://system76.com/merch/desktop-wallpapers)
+-   [Framework 12](https://frame.work/laptop12) wallpapers
+-   Historical Ubuntu wallpapers, mostly from the LTS versions
+-   Historical KDE and modern Plasma wallpaper collections
+-   [Intel One Mono](https://www.intel.com/content/www/us/en/company-overview/one-monospace-font.html) set as default monospace font
+
+For the Silverblue Images (`ghcr.io/arikcloss/sharkfin`):
+
+-   Visual Studio Code RPM installed
+-   Libvirt/Virt-Manager installed on host
+-   Docker CE installed with rootful Docker disabled
+-   Dash-to-Dock enabled by default, skipping Overview on login
+-   Appindicators enabled by default
+-   Logo Menu enabled by default (like Bluefin)
+-   Windows have minimize and maximize buttons (like Ubuntu and Bluefin)
+-   Additional packages (e.g. Firewall GUI, rclone/restic, Universal Blue enhancements)
+-   `<CTRL><ALT>t` opens a terminal
+
+For the Bluefin Images (`ghcr.io/arikcloss/sharkfin-bluefin`):
+
+-   Starship disabled by default (users can enable if needed)
+-   Rootful Docker disabled. Users can set up [rootless Docker](https://docs.docker.com/engine/security/rootless/) for themselves.
+-   A different list of default flatpaks
+
+For the Bazzite Image (`ghcr.io/arikcloss/sharkfin-bazzite`)
+
+-   GNOME desktop with similar UI to the other images
+-   Developer mode enabled (i.e. based on `bazzite-dx-gnome`)
+-   Steam does not autostart on login
+
+## Which Image? Which Version?
+
+Fedora Silverblue:
+
+-   `ghcr.io/arikcloss/sharkfin:gts` -- Fedora 43, updated weekly
+-   `ghcr.io/arikcloss/sharkfin:latest` -- Fedora 44, updated daily
+
+Bluefin (see [Bluefin's docs](https://docs.projectbluefin.io/administration#upgrades-and-throttle-settings) for more details):
+
+-   `ghcr.io/arikcloss/sharkfin-bluefin:gts` -- [Bluefin GTS](https://docs.projectbluefin.io/administration#bluefin-gts) with developer tools ("DX image"), updated weekly
+-   `ghcr.io/arikcloss/sharkfin-bluefin:stable` -- Bluefin Stable with developer tools, updated weekly
+-   `ghcr.io/arikcloss/sharkfin-bluefin:latest` -- Bluefin Latest with developer tools, updated daily
+
+Bazzite: `ghcr.io/arikcloss/sharkfin-bazzite` -- Bazzite DX GNOME stable, updated weekly
 
 ## Installation
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+First, install any [Fedora Atomic](https://fedoraproject.org/atomic-desktops/) or [Universal Blue](https://universal-blue.org) desktop edition (preferably one that features GNOME, like Silverblue or Bluefin).
 
-To rebase an existing atomic Fedora installation to the latest build:
+Then use `bootc switch` to switch to the image you want. For example:
 
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/arikcloss/sharkfin:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/arikcloss/sharkfin:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
+```
+sudo bootc switch ghcr.io/arikcloss/sharkfin:gts --enforce-container-sigpolicy
+```
 
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
+Then reboot
 
-## ISO
+```
+systemctl reboot
+```
 
-If build on Fedora Atomic, you can generate an offline ISO with the instructions available [here](https://blue-build.org/how-to/generate-iso/#_top). These ISOs cannot unfortunately be distributed on GitHub for free due to large sizes, so for public projects something else has to be used for hosting.
+## Installing via ISO
+
+If you have `podman` installed on your system, you can generate an offline ISO with the `download-iso.sh` script in this directory, like this:
+
+```
+./download-iso.sh $IMAGE_NAME $TAG_NAME
+```
+
+where `$IMAGE_NAME` is one of `sharkfin`, `sharkfin-bluefin`, or `sharkfin-bazzite` and `TAG_NAME` corresponds to `stable` (`sharkfin-bluefin` image only), `gts`, or `latest`.
 
 ## Verification
 
 These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
 
-```bash
-cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin
+```
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin:gts
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin:latest
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin-bluefin:gts
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin-bluefin:stable
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin-bluefin:latest
+cosign verify --key cosign.pub ghcr.io/arikcloss/sharkfin-bazzite
+```
+
+## Building Locally
+
+```
+./build-image.sh [recipe file]
 ```
