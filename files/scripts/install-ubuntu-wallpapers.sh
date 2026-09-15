@@ -5,9 +5,23 @@ cd /tmp
 # This takes far too long ...
 # git clone https://git.launchpad.net/ubuntu/+source/ubuntu-wallpapers
 # cd ubuntu-wallpapers
-echo "Downloading Ubuntu wallpapers from launchpad.net"
-wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/ubuntu-wallpapers/24.04.2/ubuntu-wallpapers_24.04.2.orig.tar.gz 
-tar xvzf ubuntu-wallpapers_24.04.2.orig.tar.gz 
+echo "Downloading Ubuntu wallpapers"
+URLS=(
+  "https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/ubuntu-wallpapers/24.04.2/ubuntu-wallpapers_24.04.2.orig.tar.gz"
+  "https://archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-wallpapers/ubuntu-wallpapers_24.04.2.orig.tar.gz"
+)
+ok=0
+for URL in "${URLS[@]}"; do
+  if curl -fL --retry 5 --retry-delay 5 --retry-all-errors \
+      -o ubuntu-wallpapers_24.04.2.orig.tar.gz "$URL"; then
+    ok=1
+    break
+  fi
+  echo "Download failed for $URL, trying next mirror..."
+done
+(( ok )) || { echo "All downloads of ubuntu-wallpapers failed" >&2; exit 1; }
+
+tar xzf ubuntu-wallpapers_24.04.2.orig.tar.gz 
 cd ubuntu-wallpapers_24.04.2.orig
 
 UBUNTU_RELEASES="noble mantic jammy focal bionic artful xenial trusty precise lucid"
