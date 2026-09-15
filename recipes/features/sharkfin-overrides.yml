@@ -28,7 +28,6 @@ modules:
       - setools-console
       - lm_sensors
       - firewall-config
-      - bluefin-schemas 
       - ublue-motd
       - uupd
       - bcache-tools
