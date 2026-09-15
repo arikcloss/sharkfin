@@ -83,6 +83,15 @@ If you have `podman` installed on your system, you can generate an offline ISO w
 
 where `$IMAGE_NAME` is one of `sharkfin`, `sharkfin-bluefin`, or `sharkfin-bazzite` and `TAG_NAME` corresponds to `stable` (`sharkfin-bluefin` image only), `gts`, or `latest`.
 
+## Live ISO Images
+
+Like [Bluefin](https://projectbluefin.io) and [Bazzite](https://bazzite.gg), live desktop ISOs are built for the GNOME editions using [Titanoboa](https://github.com/ublue-os/titanoboa). Trigger the **"Build Live ISOs"** GitHub Actions workflow ([Actions → Build Live ISOs](https://github.com/arikcloss/sharkfin/actions/workflows/build-iso.yml)) and download the artifacts:
+
+-   `sharkfin-bluefin-stable-live-amd64.iso` — live Bluefin desktop with the installed image inside
+-   `sharkfin-bazzite-stable-live-amd64.iso` — live Bazzite desktop with the installed image inside
+
+Boot the ISO and you get the full desktop running live from the image. To install the image to disk, launch **"Install to Disk"** from the desktop (Anaconda). The installer will also offer to enroll the Universal Blue secure boot key (password: `universalblue`) so it can boot with Secure Boot; it also works fine without Secure Boot, or you can enroll your own keys later.
+
 ## Verification
 
 These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
