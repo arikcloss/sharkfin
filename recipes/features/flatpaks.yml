@@ -34,8 +34,6 @@ modules:
         - com.github.rafostar.Clapper
         - org.gnome.Snapshot 
         - org.libreoffice.LibreOffice        
-        - com.nextcloud.desktopclient.nextcloud
-        - us.zoom.Zoom
         - org.fedoraproject.MediaWriter
         - io.github.flattool.Warehouse
         - io.github.kolunmi.Bazaar
@@ -55,11 +53,8 @@ modules:
         - org.gimp.GIMP 
         - org.audacityteam.Audacity
         - org.darktable.Darktable
-        - org.openshot.OpenShot 
-        - net.sourceforge.Hugin 
 
         # Developer Tools
-        - org.sqlitebrowser.sqlitebrowser 
         - io.dbeaver.DBeaverCommunity
         - com.ranfdev.DistroShelf
         - sh.loft.devpod
