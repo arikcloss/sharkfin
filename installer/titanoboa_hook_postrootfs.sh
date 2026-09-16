@@ -13,6 +13,16 @@ dnf install -qy --enable-repo=fedora-cisco-openh264 --allowerasing firefox anaco
 
 mkdir -p /var/lib/rpm-state # Needed for Anaconda Web UI
 
+# Default the installer's automatic partitioning to plain partitions instead of
+# LVM. Loaded as a custom Anaconda configuration file (later than the default
+# anaconda.conf), so automatic partitioning creates standard partitions.
+# Users can still choose LVM, Btrfs, or a custom layout in the storage spoke.
+mkdir -p /etc/anaconda/conf.d
+cat >/etc/anaconda/conf.d/99-sharkfin-partitioning.conf <<EOF
+[Storage]
+default_scheme = PLAIN
+EOF
+
 # Utilities for displaying a dialog prompting users to review secure boot documentation
 dnf install -qy --setopt=install_weak_deps=0 qrencode yad
 
