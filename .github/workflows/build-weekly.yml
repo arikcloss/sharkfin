@@ -34,9 +34,6 @@ jobs:
           - sharkfin-bazzite.yml
           - sharkfin-macintosh-gts.yml
           - sharkfin-macintosh-stable.yml
-          - sharkfin-macintosh-bluefin-stable.yml
-          - sharkfin-macintosh-bluefin-gts.yml
-          - sharkfin-macintosh-bazzite.yml
     steps:
        # the build is fully handled by the reusable github action
       - name: Build Custom Image

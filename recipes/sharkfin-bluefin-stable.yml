@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: sharkfin-bluefin
 # description will be included in the image's metadata
-description: Bluefin DX with my personal preferences baked in. This bootable container image follows Bluefin's stable-weekly image channel.
+description: Bluefin DX with my personal preferences baked in. This bootable container image follows Bluefin's stable image channel on Fedora 44.
 alt-tags:
   - stable
   - stable-weekly
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/bluefin-dx
-image-version: stable
+image-version: 44 # stable Fedora stream
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
