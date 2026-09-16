@@ -9,12 +9,13 @@
 #     covers the common MacBook Air/Pro WiFi and most BRCM BT
 #   - helper/power packages (powertop) and Intel VA-API media drivers
 #
-# Broadcom Wi-Fi: the Silverblue macintosh images drive the BCM43xx chips
-# (e.g. BCM4360) with the mainline open-source brcmfmac/brcmsmac drivers from
-# linux-firmware, so they deliberately do NOT pull the proprietary wl akmod in,
-# avoiding the ublue prebuilt kmod race on every Fedora kernel update ("build
-# skew"). The Bluefin/Bazzite macintosh images still carry wl (see their recipes)
-# -- wl ships its own blacklist file, so no modprobe tweaks are needed here.
+# Broadcom Wi-Fi: the Silverblue macintosh images pull the proprietary
+# broadcom-wl driver from RPM Fusion nonfree (akmod-wl + broadcom-wl, enabled
+# in their recipes) — built for the kernels in the image, so it avoids the
+# ublue prebuilt kmod race on every Fedora release. The Bluefin/Bazzite
+# macintosh images still carry wl via the ublue akmods COPR (see their
+# recipes); wl ships its own blacklist file, so no modprobe tweaks are needed
+# here.
 modules:
   - type: dnf
     repos:

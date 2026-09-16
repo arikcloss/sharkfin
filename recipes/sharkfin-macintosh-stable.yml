@@ -7,9 +7,17 @@ alt-tags:
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 43 # stable Fedora stream
+image-version: 44 # stable Fedora stream
 
 # module configuration, executed in order
 modules:
   - from-file: features/sharkfin-features.yml
+  - type: repos
+    repos:
+      rpmfusion-nonfree: true
+  - type: dnf
+    install:
+      packages:
+        - akmod-wl
+        - broadcom-wl
   - from-file: features/sharkfin-macintosh-common.yml
