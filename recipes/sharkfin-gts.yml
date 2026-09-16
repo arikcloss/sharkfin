@@ -13,3 +13,8 @@ image-version: 43
 # you can include multiple instances of the same module
 modules:
   - from-file: features/sharkfin-features.yml
+  - type: script
+    env:
+      SHARKFIN_WALLPAPER: System76-Geometric-adapted_by_Kate_Hazen_of_System76.png
+    scripts:
+      - set-default-wallpaper.sh

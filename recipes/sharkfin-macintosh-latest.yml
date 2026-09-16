@@ -20,3 +20,8 @@ modules:
         - akmod-wl
         - broadcom-wl
   - from-file: features/sharkfin-macintosh-common.yml
+  - type: script
+    env:
+      SHARKFIN_WALLPAPER: blendpills-l.jxl
+    scripts:
+      - set-default-wallpaper.sh

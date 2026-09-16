@@ -4,7 +4,6 @@
 modules:
   - from-file: features/system-files.yml
   - from-file: features/application-rpms.yml
-  - from-file: features/google-chrome.yml
   - from-file: features/vscode.yml
   - from-file: features/virtualization.yml
   - from-file: features/docker.yml

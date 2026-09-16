@@ -17,3 +17,8 @@ modules:
   - type: gschema-overrides  # Override Bluefin's overrides of Gnome default fonts
     include:
       - zz42-sharkfin-bluefin.gschema.override
+  - type: script
+    env:
+      SHARKFIN_WALLPAPER: 5120x2880.jpg
+    scripts:
+      - set-default-wallpaper.sh

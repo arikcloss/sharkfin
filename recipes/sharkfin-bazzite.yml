@@ -15,7 +15,6 @@ image-version: stable # Bazzite publishes only stream tags (no numeric 44/43)
 modules:
   - from-file: features/system-files.yml
   - from-file: features/application-rpms.yml
-  - from-file: features/google-chrome.yml
   - from-file: features/cockpit.yml
   - from-file: features/fonts.yml
   - from-file: features/gnome-ui-fixes.yml
@@ -32,3 +31,8 @@ modules:
     snippets: []
     scripts: 
       - sharkfin-disable-steam-autostart.sh
+  - type: script
+    env:
+      SHARKFIN_WALLPAPER: pixel-pusher-l.jxl
+    scripts:
+      - set-default-wallpaper.sh

@@ -4,7 +4,6 @@
 modules:
   - from-file: features/system-files.yml
   - from-file: features/application-rpms.yml
-  - from-file: features/google-chrome.yml
   - from-file: features/fonts.yml
   - from-file: features/gnome-ui-fixes.yml
   - from-file: features/sharkfin-bluefin-overrides.yml
