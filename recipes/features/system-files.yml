@@ -5,3 +5,8 @@ modules:
     files:
       - source: system
         destination: /
+  - type: script
+    # Rewrite /usr/lib/os-release with Sharkfin branding
+    # (flavor is auto-detected from the base image).
+    scripts:
+      - set-os-release.sh

@@ -48,6 +48,13 @@ DRACUT_NO_XATTR=1 dracut -v --force --zstd --reproducible --no-hostonly \
     --add "dmsquash-live dmsquash-live-autooverlay" \
     "/usr/lib/modules/${kernel}/initramfs.img" "${kernel}"
 
+# The live ISO boots via /images/pxeboot/vmlinuz + initrd.img, which titanoboa
+# copies from /usr/lib/modules/<kernel>{vmlinuz,initramfs.img}. Fail the build
+# now if either piece is missing.
+for f in "/usr/lib/modules/${kernel}/vmlinuz" "/usr/lib/modules/${kernel}/initramfs.img"; do
+    [[ -f "$f" ]] || { echo "error: required kernel file missing: $f" >&2; exit 1; }
+done
+
 # Install livesys-scripts and configure them
 dnf install -y livesys-scripts
 if [[ ${BASE_IMAGE} == *-gnome* ]]; then
@@ -61,14 +68,26 @@ systemctl enable livesys.service livesys-late.service
 "$SCRIPT_DIR/titanoboa_hook_postrootfs.sh"
 
 # image-builder needs gcdx64.efi
-dnf install -y grub2-efi-x64-cdboot
+dnf install -y grub2-efi-x64-cdboot shim-x64
 
 # image-builder expects the EFI directory to be in /boot/efi
+# (on Fedora >= 44 the shim and grub EFI binaries live under /usr/lib/efi/)
 mkdir -p /boot/efi
 cp -av /usr/lib/efi/*/*/EFI /boot/efi/
 
 # Remove fallback efi
 cp -v /boot/efi/EFI/fedora/grubx64.efi /boot/efi/EFI/BOOT/fbx64.efi # remove this line if breaks bootloader
+
+# Fail loudly if the UEFI bootchain titanoboa needs is incomplete, instead of
+# silently producing an ISO that firmware cannot boot.
+for f in \
+    /boot/efi/EFI/BOOT/BOOTX64.EFI \
+    /boot/efi/EFI/fedora/shimx64.efi \
+    /boot/efi/EFI/fedora/mmx64.efi \
+    /boot/efi/EFI/fedora/gcdx64.efi \
+    /boot/efi/EFI/fedora/grubx64.efi; do
+    [[ -f "$f" ]] || { echo "error: required EFI file missing: $f" >&2; exit 1; }
+done
 
 # Set the timezone to UTC
 rm -f /etc/localtime
@@ -98,6 +117,7 @@ systemctl enable var-tmp.mount
 
 # Mount /var/lib/flatpak as readonly.
 # This is in order to ensure the files dont get tainted when installing them in disk.
+mkdir -p /var/lib/flatpak # the bind target must exist or live boot will fail the mount
 cat >/etc/systemd/system/var-lib-flatpak.mount <<'EOF'
 [Mount]
 Type=none

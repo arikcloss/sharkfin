@@ -30,7 +30,11 @@ SECUREBOOT_DOC_URL_QR="/usr/share/ublue-os/secure_boot_qr.png"
 # Anaconda profile
 : ${VARIANT_ID:=$ID}
 
-echo "Sharkfin release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
+if [[ -n "${VERSION_CODENAME:-}" ]]; then
+    echo "Sharkfin release $VERSION_ID ($VERSION_CODENAME)" >/etc/system-release
+else
+    echo "Sharkfin release $VERSION_ID" >/etc/system-release
+fi
 
 # Secureboot Key Fetch
 mkdir -p /usr/share/ublue-os

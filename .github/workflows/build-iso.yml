@@ -80,7 +80,9 @@ jobs:
           sudo du -sh /mnt/podman-storage.img
 
       - name: Build ISOs
-        uses: Zeglius/titanoboa@revamp-pr
+        # Pin to the exact revamp-pr commit (7737f47) for reproducible ISO
+        # builds instead of following the moving branch.
+        uses: Zeglius/titanoboa@7737f4748458252ac827dca14b3d6dd09298472a
         id: build
         with:
           image-ref: localhost/payload:latest

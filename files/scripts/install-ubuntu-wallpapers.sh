@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 cd /tmp
 # This takes far too long ...
 # git clone https://git.launchpad.net/ubuntu/+source/ubuntu-wallpapers
@@ -36,3 +38,8 @@ mkdir /usr/share/backgrounds/ubuntu
 cp staging_area/* /usr/share/backgrounds/ubuntu
 echo "Additional disk space used in kb"
 du /usr/share/backgrounds/ubuntu
+
+# Register the (flat) collection with GNOME's wallpaper picker. Ubuntu ships
+# its own .xml files, but they reference the images from their original
+# release subdirectories, so we regenerate one that matches our layout.
+"$SCRIPT_DIR/generate-gnome-wallpaper-xml.sh" /usr/share/backgrounds/ubuntu ubuntu-wallpapers "Ubuntu"
