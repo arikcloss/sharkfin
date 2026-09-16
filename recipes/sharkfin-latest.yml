@@ -15,3 +15,8 @@ image-version: 44
 # you can include multiple instances of the same module
 modules:
   - from-file: features/sharkfin-features.yml
+  - type: script
+    env:
+      SHARKFIN_WALLPAPER: 2560x1440.jpg
+    scripts:
+      - set-default-wallpaper.sh
