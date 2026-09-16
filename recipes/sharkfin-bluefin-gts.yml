@@ -7,7 +7,7 @@ alt-tags:
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/bluefin-dx
-image-version: 43 # gts = current Fedora minus one
+image-version: gts # Bluefin doesn't publish a numeric 43 tag; its gts stream is the previous Fedora (43)
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
