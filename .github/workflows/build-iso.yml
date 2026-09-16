@@ -63,11 +63,13 @@ jobs:
           IMAGE="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/${{ matrix.name }}:${{ matrix.tag }}"
           CACHE_REF="ghcr.io/${{ steps.repo_owner_case.outputs.lowercase }}/sharkfin-iso-cache:${{ matrix.name }}"
           echo "${{ github.token }}" | sudo podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+          # note: buildah's cache flags take a bare repository reference, not
+          # BuildKit's "type=registry,ref=...,mode=max" syntax
           sudo env TMPDIR=/mnt/podman-storage/tmp podman build \
             --cap-add sys_admin \
             --security-opt label=disable \
-            --cache-from type=registry,ref="$CACHE_REF" \
-            --cache-to type=registry,ref="$CACHE_REF",mode=max \
+            --cache-from "$CACHE_REF" \
+            --cache-to "$CACHE_REF" \
             --build-arg BASE_IMAGE="$IMAGE" \
             --build-arg INSTALL_IMAGE_PAYLOAD="$IMAGE" \
             --build-arg ISO_LABEL="${{ matrix.label }}" \
