@@ -12,10 +12,9 @@ image-version: latest # current Fedora stream (F44)
 # module configuration, executed in order
 modules:
   - from-file: features/sharkfin-features.yml
-  - type: repos
-    repos:
-      rpmfusion-nonfree: true
   - type: dnf
+    repos:
+      nonfree: rpmfusion
     install:
       packages:
         - akmod-wl
