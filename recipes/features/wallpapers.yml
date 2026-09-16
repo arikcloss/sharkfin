@@ -13,7 +13,6 @@ modules:
         # KDE/Plasma wallpaper collections (historic KDE + modern Plasma)
         - kde-wallpapers
         - plasma-workspace-wallpapers
-        - variety
 
   - type: script
     scripts:
@@ -21,4 +20,3 @@ modules:
       - install-system76-wallpaper.sh
       - install-framework-wallpaper.sh
       - install-kde-wallpapers.sh
-      - add-variety-to-autostart.sh

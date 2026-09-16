@@ -5,7 +5,6 @@ These are [Bootable Container](https://containers.github.io/bootable/) images bu
 Modifications common to all images:
 
 -   Google Chrome RPM installed and set as default browser
--   [Variety](https://peterlevi.com/variety/) wallpaper changer (installed as RPM for now)
 -   Clocks set to AM/PM view with Weekday Display
 -   Curated selection of Flatpak apps installed automatically at runtime (this overrides Bluefin's default flatpak choices)
 -   Single click to open items in Nautilus

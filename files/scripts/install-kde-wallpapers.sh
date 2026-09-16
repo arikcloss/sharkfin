@@ -2,7 +2,7 @@
 
 # Make the modern Plasma wallpapers and the historical KDE ones (from the
 # kde-wallpapers and plasma-workspace-wallpapers packages) selectable in the
-# GNOME background chooser and usable by Variety, by flattening them into
+# GNOME background chooser, by flattening them into
 # /usr/share/backgrounds/kde, then registering them with GNOME's wallpaper
 # picker via an XML file.
 
