@@ -5,16 +5,13 @@
 
 set -eou pipefail
 
-# Prefer the proprietary Broadcom "wl" driver over the legacy open-source
-# ones so BCM43xx (MacBook Air/Pro 2012-2018) Wi-Fi binds to wl.
+# Broadcom Wi-Fi (BCM43xx, e.g. BCM4360 in the 2013-2017 Air/Pro) is handled
+# by the mainline open-source drivers (brcmfmac/brcmsmac) with firmware from
+# linux-firmware, so no proprietary kmod is needed. Do NOT blacklist ssb/bcma/
+# b43 -- brcmsmac depends on them.
 cat >/etc/modprobe.d/macintosh-broadcom.conf <<EOF
-# Broadcom BCM43xx cards in Intel Macs work best with the wl driver
-blacklist b43
-blacklist bcma
-blacklist ssb
-install b43 /bin/false
-install bcma /bin/false
-install ssb /bin/false
+# Broadcom BCM43xx cards in Intel Macs use the open-source brcmfmac/brcmsmac
+# drivers from the mainline kernel; nothing to blacklist here.
 EOF
 
 # Apple keyboards: use the F-keys by default (fnmode=2) and assume the

@@ -33,6 +33,7 @@ jobs:
           - sharkfin-bluefin-gts.yml
           - sharkfin-bazzite.yml
           - sharkfin-macintosh-gts.yml
+          - sharkfin-macintosh-stable.yml
           - sharkfin-macintosh-bluefin-stable.yml
           - sharkfin-macintosh-bluefin-gts.yml
           - sharkfin-macintosh-bazzite.yml

@@ -6,13 +6,15 @@
 #     facetimehd driver + firmware from the mulderje/facetimehd-kmod COPR
 #   - Broadcom Bluetooth firmware (BCM20702/20703) — lives in RPM Fusion
 #     nonfree/tainted, so it is intentionally NOT pulled in here; linux-firmware
-#     and the wl driver cover the common MacBook Air/Pro WiFi and most BRCM BT
+#     covers the common MacBook Air/Pro WiFi and most BRCM BT
 #   - helper/power packages (powertop) and Intel VA-API media drivers
 #
-# The Broadcom wireless driver (wl, used by the BCM43xx cards in these Macs)
-# is intentionally added per-recipe with the `akmods` module instead of here,
-# because the correct prebuilt/signed akmod base differs per family
-# (main for Bluefin/Silverblue, ogc for Bazzite).
+# Broadcom Wi-Fi: the Silverblue macintosh images drive the BCM43xx chips
+# (e.g. BCM4360) with the mainline open-source brcmfmac/brcmsmac drivers from
+# linux-firmware, so they deliberately do NOT pull the proprietary wl akmod in,
+# avoiding the ublue prebuilt kmod race on every Fedora kernel update ("build
+# skew"). The Bluefin/Bazzite macintosh images still carry wl (see their recipes)
+# -- wl ships its own blacklist file, so no modprobe tweaks are needed here.
 modules:
   - type: dnf
     repos:
