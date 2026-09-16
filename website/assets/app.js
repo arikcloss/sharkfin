@@ -1,5 +1,6 @@
 /* sharkfin — website behavior
-   Static front-end that pulls the latest ISO from the public GitHub API.
+   Static front-end: lists recent commits from the public GitHub API and
+   links to the monthly ISO releases on Google Drive.
    No secrets, no tracking, no frameworks. All text is inserted via textContent. */
 
 (function () {
@@ -7,6 +8,10 @@
 
   var REPO = "floatingskies/sharkfin";
   var API = "https://api.github.com/repos/" + REPO;
+
+  // TODO: replace with the public link to your Google Drive ISO folder once
+  // you create it (a folder share link, not a file link).
+  var GDRIVE_URL = "";
 
   function $id(id) { return document.getElementById(id); }
 
@@ -23,145 +28,21 @@
     );
   }
 
-  function fmtBytes(n) {
-    if (!n && n !== 0) return "";
-    var units = ["B", "kB", "MB", "GB", "TB"];
-    var i = 0;
-    var v = n;
-    while (v >= 1000 && i < units.length - 1) { v /= 1000; i++; }
-    return v.toFixed(v >= 10 || i === 0 ? 0 : 1) + " " + units[i];
-  }
+  /* --- Download ---------------------------------------------------- */
 
-  /* --- Markdown-lite renderer (DOM-only, XSS-safe) ---------------------- */
-
-  function addInline(parent, s) {
-    var re = /(`[^`]+`|\*\*[^*]+\*\*)/g;
-    var m, last = 0;
-    while ((m = re.exec(s))) {
-      if (m.index > last) parent.appendChild(document.createTextNode(s.slice(last, m.index)));
-      if (m[1].charAt(0) === "`") {
-        var code = document.createElement("code");
-        code.textContent = m[1].slice(1, -1);
-        parent.appendChild(code);
-      } else {
-        var b = document.createElement("strong");
-        b.textContent = m[1].slice(2, -2);
-        parent.appendChild(b);
-      }
-      last = re.lastIndex;
+  function initDrive() {
+    var link = $id("drive-link");
+    var hint = $id("drive-hint");
+    if (!link) return;
+    if (GDRIVE_URL) {
+      link.href = GDRIVE_URL;
+    } else {
+      link.style.display = "none";
+      if (hint) hint.removeAttribute("hidden");
     }
-    if (last < s.length) parent.appendChild(document.createTextNode(s.slice(last)));
   }
 
-  function renderNotes(body) {
-    var box = $id("release-notes");
-    box.textContent = "";
-    if (!body) return;
-    var ul = null;
-    body.split("\n").forEach(function (raw) {
-      var line = raw.replace(/\s+$/, "");
-      var t = line.trim();
-      if (!t) { ul = null; return; }
-      if (t.indexOf("## ") === 0) {
-        ul = null;
-        var h = document.createElement("h3");
-        addInline(h, t.slice(3));
-        box.appendChild(h);
-      } else if (t.indexOf("- ") === 0) {
-        if (!ul) { ul = document.createElement("ul"); box.appendChild(ul); }
-        var li = document.createElement("li");
-        addInline(li, t.slice(2));
-        ul.appendChild(li);
-      } else {
-        ul = null;
-        var p = document.createElement("p");
-        addInline(p, line);
-        box.appendChild(p);
-      }
-    });
-  }
-
-  /* --- Download panel ---------------------------------------------------- */
-
-  function editionInfo(name) {
-    var parts = name.split("-");
-    var key = parts[1] || "";
-    var map = { bluefin: "Bluefin", bazzite: "Bazzite", sharkfin: "Silverblue" };
-    return { edition: map[key] || key, tag: parts[2] || "" };
-  }
-
-  function renderIsoRow(release, asset) {
-    var tpl = $id("tpl-iso");
-    var node = document.importNode(tpl.content, true);
-    var info = editionInfo(asset.name);
-
-    node.querySelector(".iso-name").textContent = asset.name;
-    node.querySelector(".iso-edition").textContent = info.edition;
-    node.querySelector(".iso-tag").textContent = info.tag;
-    node.querySelector(".iso-size").textContent = fmtBytes(asset.size);
-
-    var dl = node.querySelector(".iso-download");
-    dl.href = asset.browser_download_url;
-    dl.setAttribute("download", asset.name);
-    dl.textContent = "Download (" + fmtBytes(asset.size) + ")";
-
-    var sha = node.querySelector(".iso-checksum");
-    var viaRelease = asset.browser_download_url.split(/[/?#]/).pop();
-    var checksum = release.assets.filter(function (a) {
-      return a.name === asset.name + "-CHECKSUM" || a.name === viaRelease + "-CHECKSUM";
-    })[0];
-    if (checksum) sha.href = checksum.browser_download_url;
-    else sha.style.display = "none";
-
-    return node;
-  }
-
-  function renderRelease(release) {
-    var panel = $id("release-panel");
-    panel.textContent = "";
-    if (!release || !release.assets) { showNoRelease(); return; }
-
-    var isos = release.assets.filter(function (a) { return /\.iso$/i.test(a.name); });
-    if (!isos.length) { showNoRelease(); return; }
-
-    var meta = document.createElement("p");
-    meta.className = "hint";
-    meta.textContent = "Published " + new Date(release.published_at).toDateString() +
-      " · release " + (release.tag_name || "") + " · " + isos.length + " ISO" + (isos.length > 1 ? "s" : "");
-    panel.appendChild(meta);
-
-    isos.forEach(function (a) { panel.appendChild(renderIsoRow(release, a)); });
-  }
-
-  function showNoRelease() {
-    $id("release-panel").setAttribute("hidden", "");
-    $id("release-empty").removeAttribute("hidden");
-  }
-
-  function showReleaseError(msg) {
-    var panel = $id("release-panel");
-    panel.textContent = "";
-    var p = document.createElement("p");
-    p.className = "error";
-    p.textContent = msg;
-    panel.appendChild(p);
-  }
-
-  /* --- Boot ----------------------------------------------------------------- */
-
-  function loadRelease() {
-    fetchJSON(API + "/releases/latest").then(function (data) {
-      if (data instanceof Error) {
-        if (data.status === 404) showNoRelease();
-        else showReleaseError("Could not reach the release feed right now (" + data.message + ").");
-      } else {
-        renderRelease(data);
-        renderNotes(data.body);
-      }
-    }).catch(function () {
-      showReleaseError("Could not reach GitHub right now. Check your connection and try again.");
-    });
-  }
+  /* --- Latest commits -------------------------------------------------- */
 
   function loadCommits() {
     var list = $id("commits");
@@ -244,7 +125,7 @@
     }
   }
 
-  loadRelease();
+  initDrive();
   loadCommits();
   initReveal();
   initTheme();
