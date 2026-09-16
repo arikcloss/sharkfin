@@ -32,10 +32,14 @@ jobs:
           - sharkfin-bluefin-stable.yml
           - sharkfin-bluefin-gts.yml
           - sharkfin-bazzite.yml
+          - sharkfin-macintosh-gts.yml
+          - sharkfin-macintosh-bluefin-stable.yml
+          - sharkfin-macintosh-bluefin-gts.yml
+          - sharkfin-macintosh-bazzite.yml
     steps:
        # the build is fully handled by the reusable github action
       - name: Build Custom Image
-        uses: blue-build/github-action@v1.12
+        uses: blue-build/github-action@v1.13.0
         with:
           recipe: ${{ matrix.recipe }}
           cosign_private_key: ${{ secrets.SIGNING_SECRET }}

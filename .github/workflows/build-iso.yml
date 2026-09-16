@@ -29,6 +29,15 @@ jobs:
           - name: sharkfin-bazzite
             tag: stable
             label: Sharkfin-Bazzite-Live
+          - name: sharkfin-macintosh
+            tag: latest
+            label: Sharkfin-Macintosh-Live
+          - name: sharkfin-macintosh-bluefin
+            tag: stable
+            label: Sharkfin-Macintosh-Bluefin-Live
+          - name: sharkfin-macintosh-bazzite
+            tag: stable
+            label: Sharkfin-Macintosh-Bazzite-Live
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
