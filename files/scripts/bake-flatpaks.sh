@@ -1,13 +1,22 @@
 #!/usr/bin/bash
 set -euo pipefail
 
-# Bakes the Flatpak apps into the image itself (system scope), so they are
-# already present on first boot / on the live ISO instead of being installed
-# at runtime.
+# Bakes the Flatpak apps into the image's read-only /usr, so they are already
+# present on the live ISO / on first boot / after install -- no runtime
+# install service needed. They live in an "image" flatpak installation at
+# /usr/share/flatpaks, which is versioned with the image (the documented bootc
+# pattern). A plain `flatpak install --system` would land in /var/lib/flatpak,
+# and bootc treats /var as machine-local state, so those would be discarded.
 
-flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
+mkdir -p /etc/flatpak/installations.d
+cat > /etc/flatpak/installations.d/image.conf <<'EOF'
+[Installation "image"]
+Path=/usr/share/flatpaks
+EOF
 
-flatpak install --system --noninteractive --assumeyes flathub \
+flatpak remote-add --installation=image --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+flatpak install --installation=image --noninteractive --assumeyes flathub \
     org.gtk.Gtk3theme.adw-gtk3 \
     org.gtk.Gtk3theme.adw-gtk3-dark \
     org.gnome.Firmware \
@@ -49,5 +58,3 @@ flatpak install --system --noninteractive --assumeyes flathub \
     sh.loft.devpod \
     me.iepure.devtoolbox \
     io.podman_desktop.PodmanDesktop
-
-flatpak remove --system --noninteractive --assumeyes org.fedoraproject.FedoraAppStreamData 2>/dev/null || true
