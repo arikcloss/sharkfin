@@ -48,7 +48,6 @@ flatpak install --installation=image --noninteractive --assumeyes flathub \
     org.gnome.Connections \
     org.gnome.DejaDup \
     com.discordapp.Discord \
-    com.spotify.Client \
     com.brave.Browser \
     org.gimp.GIMP \
     org.audacityteam.Audacity \
