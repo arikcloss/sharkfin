@@ -43,22 +43,36 @@ jobs:
             tag: stable
             label: Sharkfin-Macintosh-Live
     steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          tool-cache: true
+      - name: Free Disk Space
+        uses: ublue-os/remove-unwanted-software@v8
 
-      - name: Mount Container Storage BTRFS Loopback
+      - name: Mount Container Storage XFS Loopback
         run: |
+          sudo apt-get update && sudo apt-get install -y xfsprogs
           sudo truncate -s 110G /mnt/podman-storage.img
-          sudo mkfs.btrfs -f -m single -d single /mnt/podman-storage.img
+          sudo mkfs.xfs -f /mnt/podman-storage.img
           sudo podman system reset --force
           sudo systemctl stop podman.service
+
           LOOP=$(sudo losetup --find --show --direct-io=on /mnt/podman-storage.img)
           sudo mkdir -p /mnt/podman-storage
-          sudo mount -o compress-force=zstd:2,discard=async,noatime "$LOOP" /mnt/podman-storage
+          sudo mount -o discard,noatime "$LOOP" /mnt/podman-storage
           sudo mkdir -p /mnt/podman-storage/storage /mnt/podman-storage/tmp
           sudo mount --bind /mnt/podman-storage/storage /var/lib/containers/storage
+
+          sudo tee /etc/containers/storage.conf >/dev/null <<'EOF'
+          [storage]
+          driver = "overlay"
+          runroot = "/run/containers/storage"
+          graphroot = "/var/lib/containers/storage"
+
+          [storage.options]
+          ignore_chown_errors = "true"
+
+          [storage.options.overlay]
+          ignore_chown_errors = "true"
+          EOF
+
           sudo systemctl start podman.service
 
       - name: Checkout Repo
@@ -96,10 +110,10 @@ jobs:
           sudo du -sh /mnt/podman-storage.img
 
       - name: Build ISOs
-        # Pin to the exact revamp-pr commit (7737f47) for reproducible ISO
-        # builds instead of following the moving branch.
-        uses: Zeglius/titanoboa@7737f4748458252ac827dca14b3d6dd09298472a
+        uses: ublue-os/titanoboa@main
         id: build
+        env:
+          CONTAINER_STORAGE_CONF: /etc/containers/storage.conf
         with:
           image-ref: localhost/payload:latest
           iso-dest: ${{ matrix.name }}-${{ matrix.tag }}-live-amd64.iso
