@@ -44,7 +44,7 @@ jobs:
             label: Sharkfin-Macintosh-Live
     steps:
       - name: Free Disk Space
-        uses: ublue-os/remove-unwanted-software@v8
+        uses: ublue-os/remove-unwanted-software@v9
 
       - name: Mount Container Storage XFS Loopback
         run: |
